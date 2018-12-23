@@ -46,6 +46,7 @@ df = train2.drop('Survived', axis=1)
 df, y, nas = proc_df(train, 'Survived')
 X_train, X_test, y_train, y_test = train_test_split(df, y)
 
+reset_rf_samples()
 r = RandomForestClassifier(n_estimators=60)
 r.fit(X_train, y_train)
 print_score(r)
