@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 # This script applies the changes in eda in a more condensed way
 
 os.listdir("../titanic/data/")
-path = "../titanic/data/train.csv"
+path = "../titanic/data/"
 
 def print_score(m):
     res = [m.score(X_train, y_train), m.score(X_test, y_test)]
@@ -69,42 +69,40 @@ def multi_median(data, impute_var, *corr_vars):
         else:
             data[impute_var].iloc[j] = var_med
     return(data)
-dat = multi_median(data, 'Age', 'SibSp', 'Parch','Pclass')
-
-path = "../titanic/data/test.csv"
-test = pd.read_csv(path)
+dataset = multi_median(data, 'Age', 'SibSp', 'Parch','Pclass')
 
 
-train["Famsize"] = train['SibSp'] + train['Parch'] + 1
 
-train['Single'] = train['Famsize'].map(lambda s: 1 if s == 1 else 0)
-train['SmallF'] = train['Famsize'].map(lambda s: 1 if  s == 2  else 0)
-train['MedF'] = train['Famsize'].map(lambda s: 1 if 3 <= s <= 4 else 0)
-train['LargeF'] = train['Famsize'].map(lambda s: 1 if s >= 5 else 0)
+dataset["Famsize"] = dataset['SibSp'] + dataset['Parch'] + 1
+
+dataset['Single'] = dataset['Famsize'].map(lambda s: 1 if s == 1 else 0)
+dataset['SmallF'] = dataset['Famsize'].map(lambda s: 1 if  s == 2  else 0)
+dataset['MedF'] = dataset['Famsize'].map(lambda s: 1 if 3 <= s <= 4 else 0)
+dataset['LargeF'] = dataset['Famsize'].map(lambda s: 1 if s >= 5 else 0)
 
 
 
 # make variable for title
-train_title = [i.split(",")[1].split(".")[0].strip() for i in train["Name"]]
-train["Title"] = pd.Series(train_title)
-train["Title"] = train["Title"].replace(['Lady', 'the Countess','Countess',
+dataset_title = [i.split(",")[1].split(".")[0].strip() for i in dataset["Name"]]
+dataset["Title"] = pd.Series(dataset_title)
+dataset["Title"] = dataset["Title"].replace(['Lady', 'the Countess','Countess',
     'Capt', 'Col','Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'], 'Rare')
-train["Title"] = train["Title"].map({"Master":0, "Miss":1, "Ms" : 1 , "Mme":1, "Mlle":1, "Mrs":1, "Mr":2, "Rare":3})
-train["Title"] = train["Title"].astype(int)
-train.drop(labels = ["Name"], axis = 1, inplace = True)
-train["Cabin"] = pd.Series([i[0] if not pd.isnull(i) else 'X' for i in train['Cabin'] ])
-train = pd.get_dummies(train, columns = ["Cabin"],prefix="Cabin")
+dataset["Title"] = dataset["Title"].map({"Master":0, "Miss":1, "Ms" : 1 , "Mme":1, "Mlle":1, "Mrs":1, "Mr":2, "Rare":3})
+dataset["Title"] = dataset["Title"].astype(int)
+dataset.drop(labels = ["Name"], axis = 1, inplace = True)
+dataset["Cabin"] = pd.Series([i[0] if not pd.isnull(i) else 'X' for i in dataset['Cabin'] ])
+dataset = pd.get_dummies(dataset, columns = ["Cabin"],prefix="Cabin")
 
 ## Treat Ticket by extracting the ticket prefix. When there is no prefix it returns X.
 Ticket = []
-for i in list(train.Ticket):
+for i in list(dataset.Ticket):
     if not i.isdigit() :
         Ticket.append(i.replace(".","").replace("/","").strip().split(' ')[0]) #Take prefix
     else:
         Ticket.append("X")
-train["Ticket"] = Ticket
-train = pd.get_dummies(train, columns = ["Ticket"], prefix="T")
+dataset["Ticket"] = Ticket
+dataset = pd.get_dummies(dataset, columns = ["Ticket"], prefix="T")
 
-train["Pclass"] = train["Pclass"].astype("category")
-train = pd.get_dummies(train, columns = ["Pclass"],prefix="Pc")
-train.drop(labels = ["PassengerId"], axis = 1, inplace = True)
+dataset["Pclass"] = dataset["Pclass"].astype("category")
+dataset = pd.get_dummies(dataset, columns = ["Pclass"],prefix="Pc")
+dataset.drop(labels = ["PassengerId"], axis = 1, inplace = True)
