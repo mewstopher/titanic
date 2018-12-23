@@ -42,7 +42,7 @@ df.dtypes
 display_all(df.tail().T)
 
 display_all(train.tail().T)
-
+train.dtypes
 # display missing values - age, cabin, contain a high percentage
 # Embarked contains some
 display_all(train.isnull().sum().sort_index()/len(train))
@@ -171,4 +171,4 @@ train["Pclass"] = train["Pclass"].astype("category")
 train = pd.get_dummies(train, columns = ["Pclass"],prefix="Pc")
 train.drop(labels = ["PassengerId"], axis = 1, inplace = True)
 
-train.shape
+display_all(train.tail().T)
