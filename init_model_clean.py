@@ -36,13 +36,7 @@ def print_score(m):
     print(res)
 
 train = pd.read_csv(path)
-#train_cats(train)
-df, y, nas = proc_df(train, 'Survived')
-train2 = train
-train.dtypes
-train_cats(train2)
-s = train['Survived']
-df = train2.drop('Survived', axis=1)
+train_cats(train)
 df, y, nas = proc_df(train, 'Survived')
 X_train, X_test, y_train, y_test = train_test_split(df, y)
 
