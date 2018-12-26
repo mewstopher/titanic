@@ -35,9 +35,9 @@ def display_all(df):
         display(df)
 
 
-data = pd.read_csv(path)
+data = pd.read_csv(path+'train.csv')
 train_cats(data)
-
+#df, y, nas = proc_df(train, 'Survived')
 
 def multi_median(data, impute_var, *corr_vars):
     """
@@ -72,15 +72,24 @@ def multi_median(data, impute_var, *corr_vars):
 dataset = multi_median(data, 'Age', 'SibSp', 'Parch','Pclass')
 
 
+# convert Sex into categorical value 0 for male and 1 for female
+dataset["Sex"] = dataset["Sex"].map({"male": 0, "female":1})
 
+
+# fare
+dataset["Fare"] = dataset["Fare"].fillna(dataset["Fare"].median())
+dataset["Fare"] = dataset["Fare"].map(lambda i: np.log(i) if i > 0 else 0)
+
+# family size
 dataset["Famsize"] = dataset['SibSp'] + dataset['Parch'] + 1
-
 dataset['Single'] = dataset['Famsize'].map(lambda s: 1 if s == 1 else 0)
 dataset['SmallF'] = dataset['Famsize'].map(lambda s: 1 if  s == 2  else 0)
 dataset['MedF'] = dataset['Famsize'].map(lambda s: 1 if 3 <= s <= 4 else 0)
 dataset['LargeF'] = dataset['Famsize'].map(lambda s: 1 if s >= 5 else 0)
 
+# Embarked
 
+dataset = pd.get_dummies(dataset, columns = ["Embarked"], prefix="Em")
 
 # make variable for title
 dataset_title = [i.split(",")[1].split(".")[0].strip() for i in dataset["Name"]]
@@ -90,6 +99,9 @@ dataset["Title"] = dataset["Title"].replace(['Lady', 'the Countess','Countess',
 dataset["Title"] = dataset["Title"].map({"Master":0, "Miss":1, "Ms" : 1 , "Mme":1, "Mlle":1, "Mrs":1, "Mr":2, "Rare":3})
 dataset["Title"] = dataset["Title"].astype(int)
 dataset.drop(labels = ["Name"], axis = 1, inplace = True)
+dataset.shape
+# variable for missing cabbin values
+
 dataset["Cabin"] = pd.Series([i[0] if not pd.isnull(i) else 'X' for i in dataset['Cabin'] ])
 dataset = pd.get_dummies(dataset, columns = ["Cabin"],prefix="Cabin")
 
@@ -106,3 +118,4 @@ dataset = pd.get_dummies(dataset, columns = ["Ticket"], prefix="T")
 dataset["Pclass"] = dataset["Pclass"].astype("category")
 dataset = pd.get_dummies(dataset, columns = ["Pclass"],prefix="Pc")
 dataset.drop(labels = ["PassengerId"], axis = 1, inplace = True)
+dataset.shape

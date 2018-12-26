@@ -19,13 +19,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-# intial modeling using random forest for a base estimate
-# no preprocessing done
-# results give R2 values of:
-# train score: .98
-# test score: .82
-# not terrible, but also not good(should rank around top 30% of leaderboard)
-# Overfitting seems to be an issue
+# Using cleaned data (with engineered features):
+# test: .95
+# train: .93
 
 os.listdir("../titanic/data/")
 path = "../titanic/data/train_clean.csv"
@@ -36,11 +32,19 @@ def print_score(m):
     print(res)
 
 train = pd.read_csv(path)
+
 train_cats(train)
 df, y, nas = proc_df(train, 'Survived')
 X_train, X_test, y_train, y_test = train_test_split(df, y)
 
+
 reset_rf_samples()
-r = RandomForestClassifier(n_estimators=60)
-r.fit(X_train, y_train)
+m = RandomForestClassifier(n_estimators=60)
+m.fit(X_train, y_train)
 print_score(r)
+
+# keep only important variables
+X_train.shape
+fi = rf_feat_importance(m, X_train)
+def plot_fi(fi): return fi.plot('cols', 'imp', 'barh', figsize=(12,7), legend=False)
+plot_fi(fi[:30]);
