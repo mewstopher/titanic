@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 # Using cleaned data (with engineered features):
 # test: .95
 # train: .93
-
+#something going on with using df vs X_train - need to investigate
 os.listdir("../titanic/data/")
 path = "../titanic/data/train_clean.csv"
 
@@ -40,11 +40,17 @@ X_train, X_test, y_train, y_test = train_test_split(df, y)
 
 reset_rf_samples()
 m = RandomForestClassifier(n_estimators=60)
-m.fit(X_train, y_train)
-print_score(r)
+m.fit(df, y)
 
+print_score(m)
 # keep only important variables
 X_train.shape
 fi = rf_feat_importance(m, X_train)
 def plot_fi(fi): return fi.plot('cols', 'imp', 'barh', figsize=(12,7), legend=False)
 plot_fi(fi[:30]);
+to_keep = fi[fi.imp>0.005].cols; len(to_keep)
+X_train = X_train[to_keep].copy()
+X_test = X_test[to_keep].copy()
+
+df = df[to_keep].copy()
+df.shape
