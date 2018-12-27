@@ -31,10 +31,10 @@ def print_score(m):
 
 path = "../titanic/output/"
 data = pd.read_csv(path + 'train_cleaned.csv')
-train_cats(data)
-df, y, nas = proc_df(data, 'Survived')
-X_train, X_test, y_train, y_test = train_test_split(df, y)
 
+#train_cats(data)
+df, y, nas = proc_df(data, 'Survived')
+df = df.drop(['Age_na'], axis=1)
 lr_best = LogisticRegression(C=.01)
 rf_best = RandomForestClassifier(n_estimators=40)
 gb_best = GradientBoostingClassifier(n_estimators=150, learning_rate=.01)
@@ -42,5 +42,15 @@ xg_best = XGBClassifier(n_estimators=40, subsample=.6)
 votingC = VotingClassifier(estimators=[('lr', lr_best), ('rf', rf_best),
     ('gb',gb_best), ('xg', xg_best)], voting='soft', n_jobs=4)
 
-votingC = votingC.fit(X_train, y_train)
-print_score(votingC)
+votingC = votingC.fit(df, y)
+
+
+test_clean = pd.read_csv(path+"/test_cleaned.csv")
+test_clean = test_clean.drop(['Survived'], axis=1)
+new = votingC.predict(test_clean)
+new = pd.DataFrame(new)
+test = pd.read_csv("/users/brendenleavitt/documents/code/titanic/data/test.csv")
+sub = pd.concat([new, test.PassengerId], axis=1)
+sub.columns = ['Survived', 'PassengerId']
+sub = sub.astype(int)
+sub.to_csv("/users/brendenleavitt/documents/code/titanic/output/sub5.csv", index=False)

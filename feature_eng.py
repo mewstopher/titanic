@@ -36,6 +36,9 @@ def display_all(df):
 
 
 data = pd.read_csv(path+'train.csv')
+
+
+
 train_cats(data)
 #df, y, nas = proc_df(train, 'Survived')
 
@@ -99,7 +102,7 @@ dataset["Title"] = dataset["Title"].replace(['Lady', 'the Countess','Countess',
 dataset["Title"] = dataset["Title"].map({"Master":0, "Miss":1, "Ms" : 1 , "Mme":1, "Mlle":1, "Mrs":1, "Mr":2, "Rare":3})
 dataset["Title"] = dataset["Title"].astype(int)
 dataset.drop(labels = ["Name"], axis = 1, inplace = True)
-dataset.shape
+
 # variable for missing cabbin values
 
 dataset["Cabin"] = pd.Series([i[0] if not pd.isnull(i) else 'X' for i in dataset['Cabin'] ])
@@ -119,3 +122,18 @@ dataset["Pclass"] = dataset["Pclass"].astype("category")
 dataset = pd.get_dummies(dataset, columns = ["Pclass"],prefix="Pc")
 dataset.drop(labels = ["PassengerId"], axis = 1, inplace = True)
 dataset.shape
+
+dataset.columns
+
+
+
+
+
+
+
+te = dataset.iloc[:418,:]
+te.shape
+tr = dataset.iloc[418:,:]
+
+tr.to_csv("/users/brendenleavitt/documents/code/titanic/output/train_cleaned.csv")
+te.to_csv("/users/brendenleavitt/documents/code/titanic/output/test_cleaned.csv")
